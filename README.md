@@ -1,4 +1,4 @@
-# Analysis of RAS discontinuation
+# Analysis of RAS discontinuation <a href='https://www.georgeinstitute.org'><img src='figs/tgi.png' align="right" height="150" /></a>
 
 <!-- badges: start -->
 ![Languages](https://img.shields.io/badge/Languages-R-6498d3)
