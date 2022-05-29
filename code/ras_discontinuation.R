@@ -41,7 +41,7 @@
 # Install dependencies (if required) --------------------------------------
 
 # Library names
-libs = c("here", "tidyverse")
+libs = c("here", "survival", "tidyverse")
 
 # Install libraries
 install.packages(setdiff(libs, rownames(installed.packages())))
