@@ -1,3 +1,6 @@
+# Reading and writing data script
+code/01_prep_raw_data.R
+
 # Temporary and binary files
 .DS_Store
 
