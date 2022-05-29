@@ -37,7 +37,7 @@ Below is an overview of the folders in this repository that are actively synchro
 
 ### src
 
-`src` contains any files that are called via `source()` in the scripts in `code`, i.e. functions.
+`src` contains any files that are called via `source()` in the scripts in `code`, i.e. functions
 
 ## Contact
 
