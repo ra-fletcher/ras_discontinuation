@@ -10,8 +10,8 @@
 rnd = function(x, decimals) {
   # Round numbers correctly to a specified number of decimal places
   #
-  # Parameters
-  # ----------
+  # Arguments
+  # --------- 
   # x : double (number to round)
   # decimals : integer (number of decimal places to round to)
   #

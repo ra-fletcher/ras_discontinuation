@@ -28,7 +28,7 @@
 # `aendt`   : end date of the concomitant medication
 # `cq11nam` : indicator variable for whether a medication is an ACE
 # `cq12nam` : indicator variable for whether a medication is an ARB
-# `cq19nam` : indicator variabvle for whether a medication is a RAS inhibitor
+# `cq19nam` : indicator variable for whether a medication is a RAS inhibitor
 #             (which they all are)
 
 # This is not a straight forward analysis owing to quirks identified in the
