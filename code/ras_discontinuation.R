@@ -17,7 +17,7 @@
 
 # Below is a description of each variable required for the analysis
 
-# `studyid` : study identifiers for CANVAS, CANVAS-R, and CREDENCE
+# `studyid` : study identifier for CREDENCE
 # `usubjid` : participant identifiers
 # `trt01p`  : treatment allocation (canagliflozin or placebo)
 # `ittfl`   : intention-to-treat flag
@@ -64,7 +64,7 @@ source(here::here("src", "rnd.R"))
 # Create subject simulation data (1 row per subject)
 subj =
   tibble(
-    studyid = c("cnv", "cnv", "cnvr", "cnvr", "crd", "crd", "cnv", "cnvr"),	
+    studyid = "crd",	
     usubjid = paste0("id100", seq(1, 8, 1)),
     trt01p = c("cana", "plac", "cana", "plac", "cana", "plac", "cana", "plac"),
     ittfl = "y", 
