@@ -154,7 +154,7 @@ ras_end = ras_comb %>%
     )
   ) %>%
   # Remove medications which start after the end of the randomised treatment
-  # phase as we're treating the end this as the end of follow-up
+  # phase as we're treating this as the end of follow-up
   filter(astdt <= ap01edt) %>%
   # Recode the end date of treatment if it's after the end of the randomised
   # treatment phase to the date of the randomised treatment phase
