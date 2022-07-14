@@ -17,7 +17,7 @@ To get this code to work, please install all dependencies. The code for this, di
 
 ``` r
 # Library names
-libs = c("here", "survival", "tidyverse")
+libs = c("here", "survival", "tidymodels", "tidyverse")
 
 # Install libraries
 install.packages(setdiff(libs, rownames(installed.packages())))
