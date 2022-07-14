@@ -66,20 +66,22 @@ source(here::here("src", "rnd.R"))
 subj =
   tibble(
     studyid = "crd",	
-    usubjid = paste0("id100", seq(1, 10, 1)),
+    usubjid = paste0("id100", seq(1, 11, 1)),
     trt01p = c(
       "cana", "plac", "cana", "plac", "cana", "plac", "cana", "plac", "cana",
-      "plac"
+      "plac", "cana"
     ),
     ittfl = "y", 
     randfl = "y",
     ap01sdt = c(
       "2014-03-22", "2014-01-10", "2014-04-14", "2014-06-03", "2014-03-19", 
-      "2014-02-28", "2014-03-05", "2015-01-04", "2014-07-01", "2014-08-20"
+      "2014-02-28", "2014-03-05", "2015-01-04", "2014-07-01", "2014-08-20",
+      "2016-11-14"
     ),
     ap01edt = c(
       "2014-09-18", "2018-07-27", "2018-05-08", "2014-12-03", "2017-08-09", 
-      "2018-11-15", "2015-01-01", "2016-07-25", "2017-07-18", "2017-05-26"
+      "2018-11-15", "2015-01-01", "2016-07-25", "2017-07-18", "2017-05-26",
+      "2016-11-14"
     )
   )
 
@@ -88,14 +90,14 @@ ras =
   tibble(
     usubjid = c(
       "1", "1", "1", "2", "3", "3", "3", "3", "4", "4", "4", "5", "5", "5", "5",
-      "5", "6", "6", "6", "7", "7", "7", "8", "8", "9", "9", "10", "10"
+      "5", "6", "6", "6", "7", "7", "7", "8", "8", "9", "9", "10", "10", "11"
     ),
     astdt = c(
       "2013-09-03", "2012-07-16", "2014-04-11", NA, "2013-06-08", "2014-12-05",
       "2016-01-25", "2016-05-26", NA, NA, "2014-09-15", "2010-10-08", 
       "2015-05-21", "2015-08-17", "2015-10-23", "2016-05-01", "2014-02-28",
       "2015-07-09", "2018-12-25", "2014-03-05", "2014-06-13", "2014-11-21", 
-      NA, "2016-03-03", "2018-05-22", NA, NA, "2017-03-21"
+      NA, "2016-03-03", "2018-05-22", NA, NA, "2017-03-21", NA
     ),
     aendt = c(
       "2013-10-14", "2014-04-10", "2014-09-18", "2018-07-27", "2014-12-05",
@@ -103,21 +105,21 @@ ras =
       "2014-12-03", "2015-06-30", "2016-04-04", "2015-08-17", "2015-10-23",
       "2016-05-01", "2015-06-30", "2019-02-12", "2019-02-12", "2014-08-27",
       "2014-09-05", "2015-01-01", "2015-02-18", "2016-07-25", "2018-05-22",
-      "2018-05-22", "2017-05-26", "2017-04-20"
+      "2018-05-22", "2017-05-26", "2017-04-20", NA
     ),
     ablfl = c(
       NA, "y", NA, "y", "y", NA, NA, NA, "y", NA, NA, "y", NA, NA, NA, NA,
-      "y", NA, NA, "y", NA, NA, "y", NA, NA, "y", "y", NA
+      "y", NA, NA, "y", NA, NA, "y", NA, NA, "y", "y", NA, "y"
     ),
     cq11nam = c(
       "ace", NA, NA, NA, NA, "ace", "ace", "ace", "ace", "ace", NA, NA, NA, 
       "ace", "ace", "ace", NA, NA, "ace", "ace", NA, "ace", NA, NA, "ace", 
-      "ace", NA, NA
+      "ace", NA, NA, "ace"
     ),
     cq12nam = c(
       NA, "arb", "arb", "arb", "arb", NA, NA, NA, NA, NA, "arb", "arb", "arb", 
       NA, NA, NA, "arb", "arb", NA, NA, "arb", NA, "arb", "arb", NA, NA, "arb",
-      "arb"
+      "arb", NA
     ),
     cq19nam = "raas inhibitor"
   ) %>%
@@ -128,10 +130,11 @@ ras =
 # CREDENCE analysis)
 strat = 
   tibble(
-    usubjid = paste0("id100", seq(1, 10, 1)),
+    usubjid = paste0("id100", seq(1, 11, 1)),
     strata = c(
       "30 to <45", "45 to <60", "60 to <90", "30 to <45", "45 to <60", 
-      "60 to <90", "30 to <45", "45 to <60", "30 to <45", "60 to <90"
+      "60 to <90", "30 to <45", "45 to <60", "30 to <45", "60 to <90",
+      "45 to <60"
     )
   ) %>%
   mutate(strata = paste0("Screening eGFR ", strata))
@@ -143,15 +146,13 @@ ras_comb = subj %>%
   left_join(ras, by = "usubjid") %>% 
   mutate(
     across(ends_with("dt"), as_date),
-    int = ifelse(trt01p == "Cana", 1, 0),
+    int = ifelse(trt01p == "cana", 1, 0),
     drug_type = case_when(
       !is.na(cq11nam) & is.na(cq12nam) ~ "ace",
       is.na(cq11nam) & !is.na(cq12nam) ~ "arb",
       TRUE ~ NA_character_,
     )
-  ) # %>%
-  # Remove any rows where RAS use is before the start of the trial
-  # filter(aendt >= ap01sdt)
+  )
 
 
 # Quality control data ----------------------------------------------------
@@ -173,9 +174,13 @@ ras_end = ras_comb %>%
   mutate(
     aendt = case_when(
       aendt > ap01edt ~ ap01edt,
+      is.na(aendt) ~ ap01edt,
       TRUE ~ aendt
     )
-  )
+  ) %>% 
+  # Remove any rows where RAS use is before the start of the trial (have to do 
+  # this once the missing values for aendt have been imputed)
+  filter(aendt >= ap01sdt)
 
 rcd_diff = ras_end %>%
   arrange(usubjid, astdt, aendt) %>%
@@ -206,24 +211,28 @@ rcd_diff = ras_end %>%
 # Identify duplicate rows where medications are concurrent (i.e. same start and 
 # end date as each other)
 dupes = rcd_diff %>% 
-  select(row_id, usubjid, drug_type, astdt, aendt) %>%
+  select(-c(int, excl)) %>%
   group_by(usubjid, astdt, aendt) %>%
   filter(n() > 1) %>%
-  slice_max(row_id) %>%
+  slice(2:n()) %>%
   ungroup()
 
 # Identify "acute" instances or RAS inhibitor use where the start and end date
 # are equivalent to one another
 acute = rcd_diff %>%
-  select(row_id, usubjid, drug_type, astdt, aendt) %>%
-  filter(astdt == aendt)
+  select(-c(int, excl)) %>%
+  filter(
+    astdt == aendt & if_all(c("ap01edt", "astdt", "aendt"), ~ . != ap01sdt)
+  )
 
 # Remove undesirable records identified during quality control
 rcd_diff_qc = 
   lst(rcd_diff, dupes, acute) %>%
   reduce(
     anti_join, 
-    by = c("row_id", "usubjid", "astdt", "aendt", "drug_type")
+    by = c(
+      "row_id", "usubjid", "ap01sdt", "ap01edt", "astdt", "aendt", "drug_type"
+    )
   ) %>%
   group_by(usubjid) %>% 
   mutate(
