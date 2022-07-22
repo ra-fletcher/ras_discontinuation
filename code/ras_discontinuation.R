@@ -2,7 +2,7 @@
 #
 # Project: The effect of canagliflozin on discontinuation of RAS inhibitors in 
 #          the CREDENCE trial
-# Date:    06-May-2022
+# Date:    22-Jul-2022
 # Author:  Rob Fletcher
 # Purpose: Prepare RAS inhibitor discontinuation time to event data
 #
@@ -22,6 +22,8 @@
 # `trt01p`  : treatment allocation (canagliflozin or placebo)
 # `ittfl`   : intention-to-treat flag
 # `randfl`  : randomised allocation flag
+# `rangibl` : participant baseline RAS inhibitor use (in CREDENCE this is in 
+#             the baseline "subject-level" data)
 # `ap01sdt` : randomisation date
 # `ap01edt` : double blind period end date
 # `astdt`   : start date of the concomitant medication
@@ -66,22 +68,23 @@ source(here::here("src", "rnd.R"))
 subj =
   tibble(
     studyid = "crd",	
-    usubjid = paste0("id100", seq(1, 11, 1)),
+    usubjid = paste0("id100", seq(1, 12, 1)),
     trt01p = c(
       "cana", "plac", "cana", "plac", "cana", "plac", "cana", "plac", "cana",
-      "plac", "cana"
+      "plac", "cana", "plac"
     ),
     ittfl = "y", 
     randfl = "y",
+    rangibl = "y",
     ap01sdt = c(
       "2014-03-22", "2014-01-10", "2014-04-14", "2014-06-03", "2014-03-19", 
       "2014-02-28", "2014-03-05", "2015-01-04", "2014-07-01", "2014-08-20",
-      "2016-11-14"
+      "2016-11-14", "2015-07-16"
     ),
     ap01edt = c(
       "2014-09-18", "2018-07-27", "2018-05-08", "2014-12-03", "2017-08-09", 
       "2018-11-15", "2015-01-01", "2016-07-25", "2017-07-18", "2017-05-26",
-      "2016-11-14"
+      "2016-11-14", "2015-07-16"
     )
   )
 
@@ -90,14 +93,15 @@ ras =
   tibble(
     usubjid = c(
       "1", "1", "1", "2", "3", "3", "3", "3", "4", "4", "4", "5", "5", "5", "5",
-      "5", "6", "6", "6", "7", "7", "7", "8", "8", "9", "9", "10", "10", "11"
+      "5", "6", "6", "6", "7", "7", "7", "8", "8", "9", "9", "10", "10", "11",
+      "12"
     ),
     astdt = c(
       "2013-09-03", "2012-07-16", "2014-04-11", NA, "2013-06-08", "2014-12-05",
       "2016-01-25", "2016-05-26", NA, NA, "2014-09-15", "2010-10-08", 
       "2015-05-21", "2015-08-17", "2015-10-23", "2016-05-01", "2014-02-28",
       "2015-07-09", "2018-12-25", "2014-03-05", "2014-06-13", "2014-11-21", 
-      NA, "2016-03-03", "2018-05-22", NA, NA, "2017-03-21", NA
+      NA, "2016-03-03", "2018-05-22", NA, NA, "2017-03-21", NA, NA
     ),
     aendt = c(
       "2013-10-14", "2014-04-10", "2014-09-18", "2018-07-27", "2014-12-05",
@@ -105,21 +109,21 @@ ras =
       "2014-12-03", "2015-06-30", "2016-04-04", "2015-08-17", "2015-10-23",
       "2016-05-01", "2015-06-30", "2019-02-12", "2019-02-12", "2014-08-27",
       "2014-09-05", "2015-01-01", "2015-02-18", "2016-07-25", "2018-05-22",
-      "2018-05-22", "2017-05-26", "2017-04-20", NA
+      "2018-05-22", "2017-05-26", "2017-04-20", NA, NA
     ),
     ablfl = c(
       NA, "y", NA, "y", "y", NA, NA, NA, "y", NA, NA, "y", NA, NA, NA, NA,
-      "y", NA, NA, "y", NA, NA, "y", NA, NA, "y", "y", NA, "y"
+      "y", NA, NA, "y", NA, NA, "y", NA, NA, "y", "y", NA, "y", NA
     ),
     cq11nam = c(
       "ace", NA, NA, NA, NA, "ace", "ace", "ace", "ace", "ace", NA, NA, NA, 
       "ace", "ace", "ace", NA, NA, "ace", "ace", NA, "ace", NA, NA, "ace", 
-      "ace", NA, NA, "ace"
+      "ace", NA, NA, "ace", NA
     ),
     cq12nam = c(
       NA, "arb", "arb", "arb", "arb", NA, NA, NA, NA, NA, "arb", "arb", "arb", 
       NA, NA, NA, "arb", "arb", NA, NA, "arb", NA, "arb", "arb", NA, NA, "arb",
-      "arb", NA
+      "arb", NA, NA
     ),
     cq19nam = "raas inhibitor"
   ) %>%
@@ -130,11 +134,11 @@ ras =
 # CREDENCE analysis)
 strat = 
   tibble(
-    usubjid = paste0("id100", seq(1, 11, 1)),
+    usubjid = paste0("id100", seq(1, 12, 1)),
     strata = c(
       "30 to <45", "45 to <60", "60 to <90", "30 to <45", "45 to <60", 
       "60 to <90", "30 to <45", "45 to <60", "30 to <45", "60 to <90",
-      "45 to <60"
+      "45 to <60", "60 to <90"
     )
   ) %>%
   mutate(strata = paste0("Screening eGFR ", strata))
@@ -155,9 +159,32 @@ ras_comb = subj %>%
   )
 
 
+# Select those with only RAS inhibitor use at baseline --------------------
+
+# Note that in this reprex all participants as have baseline RAS inhibitor use,
+# however I had to remove them in the CREDENCE data so I'm including the 
+# relevant code here
+
+ras_bl = ras_comb %>% 
+  filter(rangibl == "y") %>% 
+  distinct(usubjid)
+
+
 # Quality control data ----------------------------------------------------
 
 ras_end = ras_comb %>%
+  inner_join(ras_bl, by = "usubjid") %>% 
+  # In CREDENCE there are a handful of participants who are reported to have
+  # RAS inhibitor use at baseline accoring to `rangibl`, but `ablfl` is missing,
+  # likely because they were randomised and stopped treatment on the same day
+  group_by(usubjid) %>% 
+  mutate(
+    ablfl = case_when(
+      n() == 1 & is.na(ablfl) & rangibl == "y" ~ "y",
+      TRUE ~ ablfl
+    )
+  ) %>% 
+  ungroup %>% 
   # If analysis start date is missing recode it as the day of randomisation
   mutate(
     astdt = case_when(
@@ -217,7 +244,7 @@ dupes = rcd_diff %>%
   slice(2:n()) %>%
   ungroup()
 
-# Identify "acute" instances or RAS inhibitor use where the start and end date
+# Identify "acute" instances of RAS inhibitor use where the start and end date
 # are equivalent to one another
 acute = rcd_diff %>%
   select(-c(int, excl)) %>%
