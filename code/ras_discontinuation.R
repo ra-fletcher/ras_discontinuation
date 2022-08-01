@@ -205,8 +205,8 @@ ras_end = ras_comb %>%
       TRUE ~ aendt
     )
   ) %>% 
-  # Remove any rows where RAS use is before the start of the trial (have to do 
-  # this once the missing values for aendt have been imputed)
+  # Remove any rows where RAS use is before the start of the trial (this needs
+  # to be done once the missing values for `aendt` have been imputed)
   filter(aendt >= ap01sdt)
 
 rcd_diff = ras_end %>%
